@@ -52,4 +52,14 @@ public final class SecureSpawnDisabledHostTest extends SecureSpawnHostTestBase {
                 new int[0]);
         runDeviceTest(MEMORY_ACCOUNTING_METHOD);
     }
+
+    @Test
+    public void hardenedMallocOffFdStateCheck() throws Exception {
+        resetPackageState();
+        editPackageState(
+                new int[] { GosPackageStateFlag.USE_HARDENED_MALLOC_NON_DEFAULT },
+                new int[] { GosPackageStateFlag.USE_HARDENED_MALLOC });
+        runDeviceTest("notExecSpawnedCompatZygote");
+        runDeviceTest(FD_STATE_METHOD);
+    }
 }

@@ -34,6 +34,7 @@ abstract class SecureSpawnHostTestBase extends BaseHostJUnit4Test {
     private static final String ROOT_CAUSE_LOG_TAG_PROPERTY = "log.tag." + ROOT_CAUSE_LOG_TAG;
     protected static final String MEMORY_ACCOUNTING_METHOD =
             "runtimeMemoryAccountingCheck";
+    protected static final String FD_STATE_METHOD = "fdStateCheck";
     private static final String HIDDEN_API_METHOD =
             "hiddenApiEnforcementCheck";
     private static final String TEST_API_COMPAT_DEFAULT_METHOD =
@@ -95,6 +96,11 @@ abstract class SecureSpawnHostTestBase extends BaseHostJUnit4Test {
     @Test
     public void acyclicReflectiveDumpCheck() throws Exception {
         runCheckCase(ACYCLIC_REFLECTIVE_DUMP_METHOD);
+    }
+
+    @Test
+    public void fdStateCheck() throws Exception {
+        runCheckCase(FD_STATE_METHOD);
     }
 
     protected void runDeviceTest(String methodName) throws Exception {
@@ -228,6 +234,9 @@ abstract class SecureSpawnHostTestBase extends BaseHostJUnit4Test {
     private static String resultLogName(String methodName) {
         if (MEMORY_ACCOUNTING_METHOD.equals(methodName)) {
             return "memory_accounting";
+        }
+        if (FD_STATE_METHOD.equals(methodName)) {
+            return "fd_state";
         }
         if (HIDDEN_API_METHOD.equals(methodName)) {
             return "hidden_api";

@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import app.grapheneos.goscompat.securespawn.shared.SecureSpawnDumpableCheck;
+import app.grapheneos.goscompat.securespawn.shared.SecureSpawnFileDescriptorCheck;
 import app.grapheneos.goscompat.securespawn.shared.SecureSpawnHiddenApiCheck;
 import app.grapheneos.goscompat.securespawn.shared.SecureSpawnReflectiveDumpCheck;
 import app.grapheneos.goscompat.securespawn.shared.SecureSpawnSmapsCheck;
@@ -60,6 +61,20 @@ public final class SecureSpawnDeviceTest {
                 .that(result.androidRuntimeSections()).isGreaterThan(0);
         assertWithMessage(failureMessage("expected isWithinMemoryBounds == true", result))
                 .that(result.isWithinMemoryBounds()).isTrue();
+    }
+
+    @Test
+    public void fdStateCheck() {
+        SecureSpawnCheck.ProcessState processState = SecureSpawnCheck.processState();
+        SecureSpawnFileDescriptorCheck.FileDescriptorState result =
+                SecureSpawnFileDescriptorCheck.run();
+        Log.i(TAG, "fdStateCheck\n" + processState + "\n" + result);
+        assertProcessState(processState);
+        assertDescriptorState("framework", result.framework(), result);
+        assertDescriptorState("sharedMemory", result.sharedMemory(), result);
+        assertWithMessage(failureMessage(
+                "expected detached mount ID regression == false", result))
+                .that(result.hasDetachedMountIdRegression()).isFalse();
     }
 
     @Test
@@ -153,6 +168,19 @@ public final class SecureSpawnDeviceTest {
                 .that(result.pid()).isGreaterThan(0);
         assertWithMessage(failureMessage("expected tid > 0", result))
                 .that(result.tid()).isGreaterThan(0);
+    }
+
+    private static void assertDescriptorState(
+            String name,
+            SecureSpawnFileDescriptorCheck.DescriptorState state,
+            SecureSpawnFileDescriptorCheck.FileDescriptorState result) {
+        if (!state.present()) {
+            return;
+        }
+        assertWithMessage(failureMessage("expected " + name + " fd >= 0", result))
+                .that(state.fd()).isAtLeast(0);
+        assertWithMessage(failureMessage("expected " + name + " mount ID > 0", result))
+                .that(state.mountId()).isGreaterThan(0);
     }
 
     private static String failureMessage(String expectation, Object result) {
