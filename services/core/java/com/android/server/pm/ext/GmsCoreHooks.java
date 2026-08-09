@@ -56,6 +56,22 @@ class GmsCoreHooks extends PackageHooks {
             case Manifest.permission.UWB_PRIVILEGED:
                 flag = GmsCorePackageFlag.GRANT_PERMS_FOR_UWB_PRIVILEGED;
                 break;
+            // CCC Digital Key ranges over UWB, but it does not start there. The
+            // phone and vehicle discover each other over BLE, exchange keys, and
+            // negotiate the ranging parameters; only then does UWB ranging begin.
+            // BluetoothDevice.getMetadata() is BLUETOOTH_PRIVILEGED, so without
+            // this the negotiation dies before UWB is ever reached.
+            //
+            // Measured on device, during a phone-key session:
+            //   GmsCompat: caught SecurityException: Neither user 10206 nor
+            //   current process has android.permission.BLUETOOTH_PRIVILEGED
+            //
+            // This is why granting UWB_PRIVILEGED alone changed nothing:
+            // mNumDeviceInitSuccess never incremented because no session was
+            // ever negotiated to start.
+            case Manifest.permission.BLUETOOTH_PRIVILEGED:
+                flag = GmsCorePackageFlag.GRANT_PERMS_FOR_BLUETOOTH_PRIVILEGED;
+                break;
             default:
                 return NO_PERMISSION_OVERRIDE;
         }
