@@ -41,6 +41,21 @@ class GmsCoreHooks extends PackageHooks {
             case Manifest.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER:
                 flag = GmsCorePackageFlag.GRANT_PERMS_FOR_ICC_AUTHENTICATION;
                 break;
+            // UWB_PRIVILEGED is signature|privileged, so no third-party app can
+            // hold it. Google's design makes GMS the privileged broker: apps use
+            // androidx.core.uwb, which binds a backend service inside GMS, and
+            // GMS makes the privileged call for them. Sandboxed GMS is an
+            // ordinary app (flags=0x0), so there is no broker and UWB is dead
+            // for every app that depends on it.
+            //
+            // Measured on device: GMS does not get denied — it never asks.
+            // UwbClient.isAvailable() returns false, GMS drops the client after
+            // ~89ms, and UwbServiceImpl is never reached. So no downstream
+            // narrowing (see getAnyNonPrivilegedAppInAttributionSource) can even
+            // execute until GMS believes it holds this permission.
+            case Manifest.permission.UWB_PRIVILEGED:
+                flag = GmsCorePackageFlag.GRANT_PERMS_FOR_UWB_PRIVILEGED;
+                break;
             default:
                 return NO_PERMISSION_OVERRIDE;
         }

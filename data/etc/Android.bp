@@ -111,6 +111,12 @@ prebuilt_etc {
 }
 
 prebuilt_etc {
+    name: "signature-permissions-praxis.xml",
+    sub_dir: "permissions",
+    src: "signature-permissions-praxis.xml",
+}
+
+prebuilt_etc {
     name: "privapp_whitelist_com.android.carrierconfig",
     system_ext_specific: true,
     sub_dir: "permissions",

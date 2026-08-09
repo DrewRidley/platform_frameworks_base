@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signature permissions for Praxis.
+
+     Platform-signing an APK is NOT sufficient on a user build: see
+     AppIdPermissionPolicy.shouldGrantPermissionBySignature, which requires the
+     app to be a factory app OR appear in this allowlist. Verified empirically —
+     an APK signed with the platform key (cert identical to framework-res.apk)
+     was still denied INJECT_EVENTS until listed here.
+
+     This allowlist NARROWS the signature check, it does not replace it: the
+     cert must still match the platform. Listing a package here grants nothing
+     to an app that is not platform-signed.
+
+     Exact match only — the lookup is a two-key ArrayMap, no wildcards. -->
+<permissions>
+    <signature-permissions package="dev.ridley.praxis">
+        <!-- deterministic input injection for workflow execution -->
+        <permission name="android.permission.INJECT_EVENTS"/>
+        <!-- optionality for a future TS.43 entitlement path; costs nothing now -->
+        <permission name="android.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER"/>
+    </signature-permissions>
+</permissions>
