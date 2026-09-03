@@ -3794,6 +3794,12 @@ public class SettingsProvider extends ContentProvider {
                 return;
             }
 
+            final int defaultColorMode = getContext().getResources().getInteger(
+                    com.android.internal.R.integer.setting_default_display_color_mode);
+            if (defaultColorMode < 0) {
+                return;
+            }
+
             final SettingsState systemSettings = getSettingsLocked(
                     SETTINGS_TYPE_SYSTEM, userId, deviceId);
             if (systemSettings == null || !systemSettings.getSettingLocked(
@@ -3803,8 +3809,7 @@ public class SettingsProvider extends ContentProvider {
 
             systemSettings.insertSettingOverrideableByRestoreLocked(
                     Settings.System.DISPLAY_COLOR_MODE,
-                    Integer.toString(
-                            android.hardware.display.ColorDisplayManager.COLOR_MODE_NATURAL),
+                    Integer.toString(defaultColorMode),
                     /* tag= */ null,
                     /* makeDefault= */ true,
                     SettingsState.SYSTEM_PACKAGE_NAME);
